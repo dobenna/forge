@@ -6,30 +6,69 @@ source "$(dirname "${BASH_SOURCE[0]}")/../bootstrap.sh"
 
 require_root
 
-if [[ "$INSTALL_VSCODE" != true ]]; then
-    warn "Instalación de VS Code deshabilitada en config.sh"
-    exit 0
-fi
+ROLE_NAME="Visual Studio Code"
 
-log "Instalando Visual Studio Code..."
+verify_role() {
+    log "Verificando configuración de ${ROLE_NAME}..."
 
-install_packages wget gpg apt-transport-https
+    if [[ "$INSTALL_VSCODE" != true ]]; then
+        warn "Instalación de VS Code deshabilitada en config.sh"
+        exit 0
+    fi
+}
 
-install -m 0755 -d /etc/apt/keyrings
+cleanup_role() {
+    log "Limpiando repositorios previos de ${ROLE_NAME}..."
 
-wget -qO- https://packages.microsoft.com/keys/microsoft.asc \
-    | gpg --dearmor -o /etc/apt/keyrings/packages.microsoft.gpg
+    rm -f /etc/apt/sources.list.d/vscode.list
+    rm -f /etc/apt/sources.list.d/vscode.sources
+    rm -f /etc/apt/sources.list.d/code.list
+    rm -f /etc/apt/sources.list.d/code.sources
+}
 
-chmod 644 /etc/apt/keyrings/packages.microsoft.gpg
+install_role() {
+    log "Instalando ${ROLE_NAME}..."
 
-cat > /etc/apt/sources.list.d/vscode.list <<EOF
-deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main
-EOF
+    install_packages \
+        ca-certificates \
+        curl \
+        gnupg \
+        apt-transport-https
 
-apt_update
+    create_keyring_dir
 
-install_packages code
+    download_gpg_key \
+        "https://packages.microsoft.com/keys/microsoft.asc" \
+        "/etc/apt/keyrings/packages.microsoft.gpg"
 
-success "Visual Studio Code instalado correctamente."
+    create_repository \
+        "/etc/apt/sources.list.d/vscode.list" \
+        "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
 
-code --version || true
+    refresh_repositories
+
+    install_packages code
+}
+
+configure_role() {
+    log "No hay configuración adicional para ${ROLE_NAME}."
+}
+
+validate_role() {
+    log "Validando ${ROLE_NAME}..."
+
+    code --version
+}
+
+main() {
+    verify_role
+    cleanup_role
+    install_role
+    configure_role
+    validate_role
+
+    success "Rol ${ROLE_NAME} completado correctamente."
+}
+
+main "$@"
+
