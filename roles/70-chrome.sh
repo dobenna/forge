@@ -6,30 +6,66 @@ source "$(dirname "${BASH_SOURCE[0]}")/../bootstrap.sh"
 
 require_root
 
-if [[ "$INSTALL_CHROME" != true ]]; then
-    warn "Instalación de Chrome deshabilitada en config.sh"
-    exit 0
-fi
+ROLE_NAME="Google Chrome"
 
-log "Instalando Google Chrome..."
+verify_role() {
+    log "Verificando configuración de ${ROLE_NAME}..."
 
-install_packages ca-certificates curl gnupg
+    if [[ "$INSTALL_CHROME" != true ]]; then
+        warn "Instalación de Chrome deshabilitada en config.sh"
+        exit 0
+    fi
+}
 
-install -m 0755 -d /etc/apt/keyrings
+cleanup_role() {
+    log "Limpiando repositorios previos de ${ROLE_NAME}..."
 
-curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
-    | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
+    rm -f /etc/apt/sources.list.d/google-chrome.list
+    rm -f /etc/apt/sources.list.d/google-chrome.sources
+}
 
-chmod 644 /etc/apt/keyrings/google-chrome.gpg
+install_role() {
+    log "Instalando ${ROLE_NAME}..."
 
-cat > /etc/apt/sources.list.d/google-chrome.list <<EOF
-deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main
-EOF
+    install_packages \
+        ca-certificates \
+        curl \
+        gnupg
 
-apt_update
+    create_keyring_dir
 
-install_packages google-chrome-stable
+    download_gpg_key \
+        "https://dl.google.com/linux/linux_signing_key.pub" \
+        "/etc/apt/keyrings/google-chrome.gpg"
 
-success "Google Chrome instalado correctamente."
+    create_repository \
+        "/etc/apt/sources.list.d/google-chrome.list" \
+        "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main"
 
-google-chrome --version || true
+    refresh_repositories
+
+    install_packages google-chrome-stable
+}
+
+configure_role() {
+    log "No hay configuración adicional para ${ROLE_NAME}."
+}
+
+validate_role() {
+    log "Validando ${ROLE_NAME}..."
+
+    google-chrome --version
+}
+
+main() {
+    verify_role
+    cleanup_role
+    install_role
+    configure_role
+    validate_role
+
+    success "Rol ${ROLE_NAME} completado correctamente."
+}
+
+main "$@"
+
