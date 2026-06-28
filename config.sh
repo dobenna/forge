@@ -35,6 +35,7 @@ INSTALL_TERRAFORM=true
 INSTALL_VSCODE=true
 INSTALL_CHROME=true
 INSTALL_ZSH=true
+CONFIGURE_ROOT_SHELL=true
 
 #######################################
 # Docker
