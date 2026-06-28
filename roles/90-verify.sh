@@ -6,14 +6,14 @@ source "$(dirname "${BASH_SOURCE[0]}")/../bootstrap.sh"
 
 require_root
 
-ROLE_NAME="verify"
+ROLE_NAME="Verify"
 FAILED=0
 
 check_command() {
     local cmd="$1"
     local label="$2"
 
-    if command -v "$cmd" >/dev/null 2>&1; then
+    if command_exists "$cmd"; then
         success "$label encontrado: $(command -v "$cmd")"
     else
         warn "$label no encontrado"
@@ -44,7 +44,7 @@ check_group() {
     fi
 }
 
-verify() {
+verify_role() {
     log "Verificando sistema base..."
 
     if grep -q "bookworm" /etc/os-release; then
@@ -57,19 +57,19 @@ verify() {
     log "Kernel actual: $(uname -r)"
 }
 
-cleanup() {
-    log "No hay limpieza requerida para verify."
+cleanup_role() {
+    log "No hay limpieza requerida para ${ROLE_NAME}."
 }
 
-install() {
-    log "No hay instalación requerida para verify."
+install_role() {
+    log "No hay instalación requerida para ${ROLE_NAME}."
 }
 
-configure() {
-    log "No hay configuración requerida para verify."
+configure_role() {
+    log "No hay configuración requerida para ${ROLE_NAME}."
 }
 
-validate() {
+validate_role() {
     log "Verificando herramientas instaladas..."
 
     check_command git "Git"
@@ -84,7 +84,6 @@ validate() {
     check_command pip3 "pip3"
 
     check_service docker
-
     check_group "$USER_NAME" docker
 
     log "Espacio en disco:"
@@ -95,18 +94,19 @@ validate() {
 }
 
 main() {
-    verify
-    cleanup
-    install
-    configure
-    validate
+    verify_role
+    cleanup_role
+    install_role
+    configure_role
+    validate_role
 
     if [[ "$FAILED" -eq 0 ]]; then
-        success "Forge verification PASS."
+        success "Rol ${ROLE_NAME} completado correctamente."
     else
-        warn "Forge verification terminó con advertencias."
+        warn "Rol ${ROLE_NAME} terminó con advertencias."
         exit 1
     fi
 }
 
 main "$@"
+
