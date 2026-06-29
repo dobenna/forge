@@ -1,54 +1,61 @@
 # Changelog
 
-Todos los cambios importantes de Forge serán documentados aquí.
+All notable changes to Forge will be documented in this file.
 
-El formato está basado en Keep a Changelog.
+The project follows Semantic Versioning.
 
 ---
-## [0.2.0] - 2026-06-28
 
-### Added
+# 0.2.0
 
-- Rol Terminal
-- Plantillas Zsh
-- Aliases DevOps
-- Configuración Oh My Zsh
-- Powerlevel10k
-- Plugins Zsh
-- Soporte para templates de configuración
+Release date
 
-### Changed
+2026-06-28
 
-- Refactor de roles al estándar `*_role`
-- Refactor de Docker
-- Refactor de Kubernetes
-- Refactor de Terraform
-- Refactor de VS Code
-- Refactor de Chrome
-- Refactor de Git
-- Refactor de Base
-- Refactor de Verify
-- Nueva librería `repository.sh`
+## Added
 
+* Modular role architecture
+* Template system
+* Terminal role
+* Root shell configuration
+* Powerlevel10k support
+* Oh My Zsh support
+* Zsh plugins
+* Repository helper library
+* Operating system detection
+* Package manager abstraction
+* Architecture documentation
+* Project documentation
+* Roadmap
+* Semantic versioning
 
+## Changed
 
-## [0.1.0] - 2026-06-27
+* Standardized every role lifecycle
+* Refactored Docker role
+* Refactored Kubernetes role
+* Refactored Terraform role
+* Refactored VS Code role
+* Refactored Chrome role
+* Refactored Git role
+* Refactored Base role
+* Refactored Verify role
+* Improved project structure
+* Improved documentation
 
-### Added
+---
 
-- Arquitectura inicial del framework
-- Sistema de roles
-- Sistema de librerías
-- Configuración centralizada
-- Plantilla de roles
-- Rol Base
-- Rol Git
-- Rol Docker
-- Rol Kubernetes
-- Rol Terraform
-- Rol VS Code
-- Rol Chrome
-- Rol Verify
-- README
-- CONTRIBUTING
-- LICENSE
+# 0.1.0
+
+Initial public architecture
+
+Features
+
+* Bootstrap
+* Base role
+* Docker
+* Kubernetes
+* Terraform
+* Git
+* Verify
+
