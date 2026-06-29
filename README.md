@@ -1,43 +1,89 @@
 # Forge
 
-> Personal Linux Workstation Provisioning Framework
+Forge is a modular Linux workstation provisioning framework designed for DevOps, Cloud, Automation and Software Engineering.
 
-Forge es un framework modular desarrollado para aprovisionar, configurar y mantener estaciones de trabajo Linux orientadas a DevOps, Cloud, Automatización y Desarrollo.
+It provides a reproducible and version-controlled way to build professional Linux workstations across multiple Linux families.
 
-Nació durante la construcción de **Legolas**, una estación de trabajo basada en Debian 12, pero fue diseñado para poder reutilizarse en cualquier equipo Linux compatible.
-
----
-
-# Objetivos
-
-* Automatizar la configuración de una estación de trabajo.
-* Mantener una estructura modular y fácilmente extensible.
-* Evitar configuraciones manuales repetitivas.
-* Versionar toda la infraestructura personal.
-* Servir como laboratorio para practicar buenas prácticas DevOps.
+Forge started as the bootstrap framework for **Legolas**, a Debian 12 workstation, but it is designed to evolve into a reusable provisioning toolkit.
 
 ---
 
-# Características
+## Current Version
 
-* Arquitectura modular basada en roles.
-* Configuración centralizada.
-* Librerías reutilizables.
-* Instalación selectiva o completa.
-* Proyecto completamente versionable mediante Git.
-* Pensado para crecer sin modificar el núcleo del framework.
+0.2.0
 
----
+Purpose
 
-# Estructura del proyecto
+Forge exists to automate the setup of a professional Linux workstation.
 
-```text
+Instead of manually installing tools every time a system is rebuilt, Forge provides a repeatable way to install, configure and validate a complete development environment.
+
+## Supported Platforms
+
+Current support:
+
+- Debian 12 Bookworm
+- Ubuntu (planned validation)
+- Linux Mint (planned validation)
+
+Architecture already prepared for:
+
+- Rocky Linux
+- AlmaLinux
+- Red Hat Enterprise Linux
+- Fedora
+
+Forge detects the operating system at runtime and abstracts package management and operating system specific behavior through internal libraries.
+
+
+## Forge currently includes roles for:
+
+Role	    Description
+Base	    Essential system packages and CLI utilities
+Git	        Global Git configuration
+Docker	    Docker CE and Docker Compose plugin
+Kubernetes	kubectl, Helm and kind
+Terraform	Terraform from HashiCorp repositories
+VS Code	    Visual Studio Code
+Chrome	    Google Chrome
+Terminal	Zsh, Oh My Zsh, Powerlevel10k, plugins and aliases
+Verify	    Environment validation and health checks
+
+## Features
+
+Modular role-based architecture
+Centralized configuration
+Reusable Bash libraries
+Template-based configuration deployment
+Idempotent role design where possible
+Root and user terminal configuration
+Git-based project history
+Versioned releases
+Clear project documentation
+
+
+## Project Structure
+
 forge/
-│
-├── install.sh              # Orquestador principal
-├── bootstrap.sh            # Inicialización del framework
-├── config.sh               # Configuración global
-│
+├── assets/
+├── bootstrap.sh
+├── config.sh
+├── docs/
+│   ├── CHANGELOG.md
+│   ├── CONTRIBUTING.md
+│   ├── PROJECT.md
+│   ├── README.md
+│   └── ROADMAP.md
+├── examples/
+├── install.sh
+├── lib/
+│   ├── apt.sh
+│   ├── common.sh
+│   ├── repository.sh
+│   └── system.sh
+├── LICENSE
+├── log/
+├── README.md
 ├── roles/
 │   ├── 10-base.sh
 │   ├── 20-git.sh
@@ -48,235 +94,262 @@ forge/
 │   ├── 70-chrome.sh
 │   ├── 80-terminal.sh
 │   └── 90-verify.sh
-│
-├── lib/
-│   ├── common.sh
-│   ├── apt.sh
-│   └── system.sh
-│
-├── logs/
+├── screenshots/
+├── templates/
+│   ├── role-template.sh
+│   └── zsh/
+│       ├── aliases.zsh
+│       ├── exports.zsh
+│       ├── functions.zsh
+│       └── zshrc
 ├── tmp/
-│
-├── README.md
-├── LICENSE
-└── .gitignore
-```
+└── VERSION
 
----
 
-# Filosofía
+## Architecture Overview
 
-Cada componente tiene una única responsabilidad.
+Forge follows a simple execution flow:
 
-* **roles/** contiene tareas de instalación o configuración.
-* **lib/** contiene funciones reutilizables.
-* **config.sh** centraliza toda la configuración.
-* **install.sh** orquesta la ejecución.
-
-Esto permite que el proyecto pueda crecer durante años sin perder mantenibilidad.
-
----
-
-# Requisitos
-
-Actualmente Forge está desarrollado para:
-
-* Debian 12 Bookworm
-* Bash
-* Acceso como root mediante sudo
-* Conexión a Internet
-
----
-
-# Instalación
-
-Clonar el repositorio:
-
-```bash
-git clone <REPOSITORIO>
-```
-
-Entrar al proyecto:
-
-```bash
-cd forge
-```
-
-Dar permisos:
-
-```bash
-chmod +x install.sh
-```
-
----
-
-# Uso
-
-## Listar roles disponibles
-
-```bash
-./install.sh list
-```
-
-## Ejecutar un rol
-
-```bash
-sudo ./install.sh docker
-```
-
-## Ejecutar todos los roles
-
-```bash
-sudo ./install.sh all
-```
-
----
-
-# Configuración
-
-Toda la configuración del framework se encuentra en:
-
-```text
 config.sh
-```
+   ↓
+bootstrap.sh
+   ↓
+install.sh
+   ↓
+roles/
+   ↓
+lib/ + templates/
+config.sh
 
-Ejemplos:
+## Operating System Abstraction
 
-* Usuario del sistema
-* Configuración de Git
-* Zona horaria
-* Editor por defecto
-* Roles habilitados
-* Versiones de componentes
+One of Forge's core design principles is operating system abstraction.
 
-No es necesario modificar los scripts para cambiar la configuración.
+Provisioning roles never interact directly with package managers whenever possible.
 
----
+Instead they rely on reusable libraries that detect the current operating system and execute the appropriate implementation.
 
-# Roles actuales
+Current abstraction layers include:
 
-| Rol    | Descripción                            |
-| ------ | -------------------------------------- |
-| Base   | Instalación de herramientas esenciales |
-| Git    | Configuración global de Git            |
-| Docker | Instalación y configuración de Docker  |
+- Operating system detection
+- Package manager abstraction
 
----
+Future abstraction layers:
 
-# Roles planificados
+- Repository management
+- Service management
+- File management
+- Firewall management
 
-* Kubernetes
-* Helm
-* Kind
-* Terraform
-* Visual Studio Code
-* Google Chrome
-* Terminal (Zsh + Powerlevel10k)
-* AWS CLI
-* Azure CLI
-* Ansible
-* OpenShift CLI
-* K9s
-* LazyDocker
-* Tailscale
-* PostgreSQL
-* Redis
-* Monitoring
-* Verify
+This architecture allows Forge to grow beyond Debian without requiring significant changes to existing roles.
 
----
+## Stores global configuration such as:
 
-# Librerías
+target user
+Git identity
+enabled components
+terminal configuration options
+bootstrap.sh
 
-Las funciones reutilizables están organizadas por responsabilidad.
+## Loads the Forge runtime:
 
-## common.sh
+configuration
+common functions
+system helpers
+APT helpers
+repository helpers
+install.sh
 
-* log()
-* warn()
-* success()
-* error()
+## Acts as the main orchestrator.
 
-## apt.sh
+It can list roles, run one role or run all roles.
 
-* apt_update()
-* install_packages()
-* remove_packages()
+roles/
 
-## system.sh
+Contains independent provisioning roles.
 
-* require_root()
-* enable_service()
-* command_exists()
+Each role is responsible for one capability.
 
----
+lib/
 
-# Principios del proyecto
+Contains reusable Bash functions.
 
-Forge sigue varios principios de diseño:
+templates/
 
-* Modularidad
-* Simplicidad
-* Reutilización
-* Configuración centralizada
-* Separación entre lógica y configuración
-* Idempotencia siempre que sea posible
+Contains configuration files deployed by roles.
 
----
+## Usage
 
-# Roadmap
+List available roles
+./install.sh list
 
-## Fase 1
+Run a single role
+sudo ./install.sh docker
 
-* Base
-* Git
-* Docker
+Examples:
 
-## Fase 2
+sudo ./install.sh base
+sudo ./install.sh git
+sudo ./install.sh kubernetes
+sudo ./install.sh terminal
+sudo ./install.sh verify
 
-* Kubernetes
-* Terraform
-* VS Code
-* Chrome
+Run all roles
+sudo ./install.sh all
+Recommended First Run
 
-## Fase 3
+For a new Debian 12 workstation:
 
-* Terminal personalizada
-* AWS
-* Azure
-* Ansible
+sudo ./install.sh base
+sudo ./install.sh git
+sudo ./install.sh docker
+sudo ./install.sh kubernetes
+sudo ./install.sh terraform
+sudo ./install.sh vscode
+sudo ./install.sh chrome
+sudo ./install.sh terminal
+sudo ./install.sh verify
 
-## Fase 4
+After running the terminal role, log out and log back in so the default shell change takes effect.
 
-* Laboratorio Kubernetes
-* Observabilidad
-* Automatización avanzada
 
----
+## Terminal Role
 
-# Contribución
+The terminal role configures a modern Zsh environment for both the main user and root.
 
-Actualmente Forge es un proyecto personal, pero su arquitectura busca seguir buenas prácticas para facilitar futuras mejoras y colaboraciones.
+It installs and configures:
 
----
+Zsh
+Oh My Zsh
+Powerlevel10k
+zsh-autosuggestions
+zsh-syntax-highlighting
+fzf
+zoxide
+DevOps aliases
+helper functions
+shell exports
 
-# Licencia
+Configuration templates live in:
 
-MIT License
+templates/zsh/
 
----
+User configuration is deployed to:
 
-# Autor
+~/.zshrc
+~/.forge/
 
-**Elba Guerra**
+Root configuration is deployed to:
 
-Ingeniera de Sistemas | Linux | DevOps | Automatización | Cloud
+/root/.zshrc
+/root/.forge/
+Role Standard
 
----
+Every role should follow the official Forge role structure:
 
-## Visión
+verify_role()
+cleanup_role()
+install_role()
+configure_role()
+validate_role()
+main()
 
-Forge no es solo un conjunto de scripts.
+This keeps roles predictable, readable and maintainable.
 
-Es una plataforma para construir, mantener y evolucionar una estación de trabajo reproducible, donde cada cambio queda documentado y versionado, permitiendo recrear un entorno completo de desarrollo con un único comando.
+## Current Development Flow
+
+Forge uses two main branches:
+
+Branch	Purpose
+main	Stable releases
+develop	Active development
+
+Feature work is done in develop.
+Stable versions are merged into main and tagged.
+
+## Versioning
+
+Forge follows semantic versioning:
+
+MAJOR.MINOR.PATCH
+
+Example:
+
+0.2.0
+
+## Version information is stored in:
+
+VERSION
+Documentation
+
+## Additional documentation is located in:
+
+docs/
+File	            Purpose
+CHANGELOG.md	    Release history
+CONTRIBUTING.md	    Contribution and coding rules
+PROJECT.md	        Project vision and management
+ROADMAP.md	    Planned versions and future ideas
+
+## Status
+
+Forge is currently in early development.
+
+Current milestone:
+
+v0.2.0 — Developer Experience
+
+## Main achievements:
+
+Role architecture stabilized
+All current roles standardized
+Terminal role implemented
+Root shell configuration added
+Repository helper library added
+Verification role available
+
+## Future Direction
+
+Planned future capabilities include:
+
+Native Red Hat family support
+Cross-distribution repositories
+Operating system plugins
+Distribution-specific package mapping
+AWS CLI
+Ansible
+GitHub CLI
+K9s
+LazyDocker
+Tailscale
+OpenShift CLI
+Forge command wrapper
+Doctor command
+Automated tests
+GitHub Actions
+Public release workflow
+
+## License
+
+This project is licensed under the MIT License.
+
+See:
+
+LICENSE
+
+
+## Author
+
+Elba Guerra
+Linux | DevOps | Automation | Cloud | Systems Engineering
+
+
+## Project Vision
+
+Forge is more than an installation framework.
+
+Its long-term goal is to become a cross-distribution provisioning framework capable of building professional Linux workstations in a consistent, reproducible and maintainable way.
+
+Every architectural decision is made with portability, modularity and long-term maintainability in mind.
+It is a long-term learning and automation project designed to capture, automate and document the evolution of a professional Linux DevOps workstation.
 
